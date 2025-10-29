@@ -1,3 +1,4 @@
+import { ORPCError } from '@orpc/client'
 import { base } from '@/orpc/middlewares/base'
 import { z } from 'zod'
 import { TodoSchema, TodoListSchema } from '@/orpc/schema'
@@ -17,7 +18,27 @@ export const listTodos = base
       const todos = await prisma.todo.findMany()
       return todos
     } catch (error) {
-      throw errors.UNAUTHORIZED()
+      throw errors.BAD_REQUEST()
+    }
+  })
+
+export const getTodoById = base
+  .input(z.object({ id: z.number().int().min(1) }))
+  .output(TodoSchema)
+  .handler(async ({ input, errors }) => {
+    try {
+      const todo = await prisma.todo.findUnique({
+        where: { id: input.id },
+      })
+      if (!todo) {
+        throw errors.NOT_FOUND()
+      }
+      return todo
+    } catch (error) {
+      if (error instanceof ORPCError) {
+        throw error
+      }
+      throw errors.BAD_REQUEST()
     }
   })
 

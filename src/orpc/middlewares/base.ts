@@ -15,4 +15,8 @@ export const base = os.errors({
     message: 'Simulated ORPC error adding todo :)',
     status: 400,
   },
+  NOT_FOUND: {
+    message: 'Resource not found',
+    status: 404,
+  },
 })
