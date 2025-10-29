@@ -11,8 +11,8 @@ const todos = [
 export const listTodos = base
   .input(z.object({}))
   .output(TodoListSchema)
-  .handler(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+  .handler(async ({ errors }) => {
+    throw errors.BAD_REQUEST()
     return todos
   })
 
