@@ -35,7 +35,7 @@ function App() {
           <ul className="mb-4">
             {todos.map((todo) => (
               <li key={todo.id} className="border-b py-2">
-                {todo.name}
+                {todo.title}
               </li>
             ))}
           </ul>

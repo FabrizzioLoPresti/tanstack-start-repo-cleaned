@@ -1,6 +1,7 @@
 import { base } from '@/orpc/middlewares/base'
 import { z } from 'zod'
 import { TodoSchema, TodoListSchema } from '@/orpc/schema'
+import { prisma } from '@/db'
 
 const todos = [
   { id: 1, name: 'Get groceries' },
@@ -12,8 +13,12 @@ export const listTodos = base
   .input(z.object({}))
   .output(TodoListSchema)
   .handler(async ({ errors }) => {
-    throw errors.BAD_REQUEST()
-    return todos
+    try {
+      const todos = await prisma.todo.findMany()
+      return todos
+    } catch (error) {
+      throw errors.UNAUTHORIZED()
+    }
   })
 
 export const addTodo = base
