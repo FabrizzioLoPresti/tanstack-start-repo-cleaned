@@ -57,6 +57,12 @@ function App() {
       </h1>
       <div className="max-w-md mx-auto">
         <h2 className="text-2xl font-bold mb-4">Todo List</h2>
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded"
+          onClick={() => refetch()}
+        >
+          Refetch Todos
+        </button>
         {isLoadingTodos && <p>Loading todos...</p>}
         {isErrorTodos && (
           <p className="text-red-500">
