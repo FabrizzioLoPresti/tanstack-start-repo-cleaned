@@ -1,5 +1,6 @@
 import { base } from '@/orpc/middlewares/base'
-import * as z from 'zod'
+import { z } from 'zod'
+import { TodoSchema, TodoListSchema } from '@/orpc/schema'
 
 const todos = [
   { id: 1, name: 'Get groceries' },
@@ -7,9 +8,13 @@ const todos = [
   { id: 3, name: 'Finish the project' },
 ]
 
-export const listTodos = base.input(z.object({})).handler(() => {
-  return todos
-})
+export const listTodos = base
+  .input(z.object({}))
+  .output(TodoListSchema)
+  .handler(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+    return todos
+  })
 
 export const addTodo = base
   .input(z.object({ name: z.string() }))
