@@ -56,6 +56,26 @@ function App() {
     },
   })
 
+  // ! Add new Todo from TanStack Form using oRPC mutation
+  const {
+    mutate: addTodo,
+    data: newTodo,
+    isPending: isPendingAddTodo,
+    isError: isErrorAddTodo,
+    error: errorAddTodo,
+  } = useMutation({
+    mutationFn: (input: { title: string }) => orpc.addTodo.call(input),
+    onSuccess: (data) => {
+      console.log('New Todo added:', data)
+      // Refetch the todos list after adding a new todo
+      refetch()
+      form.reset()
+    },
+    onError: (error: any) => {
+      alert(`Error adding todo: ${error.message}`)
+    },
+  })
+
   // ! Initialize TanStack Form
   const form = useAppForm({
     defaultValues: {
@@ -67,7 +87,7 @@ function App() {
     onSubmit: ({ value }) => {
       console.log(value)
       // Show success message
-      alert('Form submitted successfully!')
+      addTodo({ title: value.title })
     },
   })
 
@@ -147,6 +167,20 @@ function App() {
 
       <div className="max-w-md mx-auto mt-8">
         <h2 className="text-2xl font-bold mb-4">TanStack Form Demo</h2>
+        {isPendingAddTodo && <p>Adding todo...</p>}
+        {isErrorAddTodo && (
+          <p className="text-red-500">
+            Error adding todo: {errorAddTodo.message}
+          </p>
+        )}
+        {newTodo && (
+          <div className="mt-4 p-4 border rounded">
+            <h3 className="font-bold">New Todo Added:</h3>
+            <p>ID: {newTodo.id}</p>
+            <p>Title: {newTodo.title}</p>
+            <p>Created At: {new Date(newTodo.createdAt).toLocaleString()}</p>
+          </div>
+        )}
         <form
           onSubmit={(e) => {
             e.preventDefault()
