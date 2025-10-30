@@ -42,7 +42,9 @@ export const addTodo = base
   .handler(async ({ input, errors, context }) => {
     try {
       if (!input.title || input.title.length < 3) {
-        throw errors.BAD_REQUEST()
+        throw errors.BAD_REQUEST({
+          message: 'Title must be at least 3 characters long',
+        })
       }
       await new Promise((resolve) => setTimeout(resolve, 2000)) // Simular retardo de 2000ms
       const newTodo = await prisma.todo.create({
