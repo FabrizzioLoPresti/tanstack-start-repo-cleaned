@@ -4,7 +4,13 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { orpc } from '@/orpc/client'
 
+// Importar el hook useAppForm de TanStack Form
+import { useAppForm } from '@/hooks/demo.form'
+import { TodoSchema } from '@/orpc/schema'
+
 export const Route = createFileRoute('/')({ component: App })
+
+const schema = TodoSchema.pick({ title: true })
 
 function App() {
   // ! Get List of Todos from the oRPC endpoint using React Query
@@ -47,6 +53,21 @@ function App() {
     mutationFn: (input: { id: number }) => orpc.getTodoById.call(input),
     onSuccess: (data) => {
       console.log('Todo fetched by ID:', data)
+    },
+  })
+
+  // ! Initialize TanStack Form
+  const form = useAppForm({
+    defaultValues: {
+      title: '',
+    },
+    validators: {
+      onBlur: schema,
+    },
+    onSubmit: ({ value }) => {
+      console.log(value)
+      // Show success message
+      alert('Form submitted successfully!')
     },
   })
 
@@ -122,6 +143,28 @@ function App() {
             <p>Created At: {new Date(todoById.createdAt).toLocaleString()}</p>
           </div>
         )}
+      </div>
+
+      <div className="max-w-md mx-auto mt-8">
+        <h2 className="text-2xl font-bold mb-4">TanStack Form Demo</h2>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            form.handleSubmit()
+          }}
+          className="space-y-6"
+        >
+          <form.AppField name="title">
+            {(field) => <field.TextField label="Title" />}
+          </form.AppField>
+
+          <div className="flex justify-end">
+            <form.AppForm>
+              <form.SubscribeButton label="Submit" />
+            </form.AppForm>
+          </div>
+        </form>
       </div>
     </div>
   )
