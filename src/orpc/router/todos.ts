@@ -3,6 +3,7 @@ import { base } from '@/orpc/middlewares/base'
 import { z } from 'zod'
 import { TodoSchema, TodoListSchema } from '@/orpc/schema'
 import { prisma } from '@/db'
+import { requiredAuthMiddleware } from '@/orpc/middlewares/auth'
 
 export const listTodos = base
   .input(z.object({}))
@@ -37,6 +38,7 @@ export const getTodoById = base
   })
 
 export const addTodo = base
+  .use(requiredAuthMiddleware)
   .input(z.object({ title: TodoSchema.shape.title }))
   .output(TodoSchema)
   .handler(async ({ input, errors, context }) => {
@@ -47,6 +49,7 @@ export const addTodo = base
         })
       }
       await new Promise((resolve) => setTimeout(resolve, 2000)) // Simular retardo de 2000ms
+      console.log('Authenticated user adding todo:', context.user) // Si toma del contexto del middleware de auth
       const newTodo = await prisma.todo.create({
         data: {
           title: input.title,

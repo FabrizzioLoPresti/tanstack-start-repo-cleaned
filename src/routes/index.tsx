@@ -7,6 +7,7 @@ import { orpc } from '@/orpc/client'
 // Importar el hook useAppForm de TanStack Form
 import { useAppForm } from '@/hooks/demo.form'
 import { TodoSchema } from '@/orpc/schema'
+import { z } from 'zod'
 
 export const Route = createFileRoute('/')({ component: App })
 
@@ -64,7 +65,8 @@ function App() {
     isError: isErrorAddTodo,
     error: errorAddTodo,
   } = useMutation({
-    mutationFn: (input: { title: string }) => orpc.addTodo.call(input),
+    // mutationFn: (input: { title: string }) => orpc.addTodo.call(input),
+    mutationFn: (newTodo: z.infer<typeof schema>) => orpc.addTodo.call(newTodo),
     onSuccess: (data) => {
       console.log('New Todo added:', data)
       // Refetch the todos list after adding a new todo
