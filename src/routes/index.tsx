@@ -73,7 +73,7 @@ function App() {
       refetch()
       form.reset()
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       alert(`Error adding todo: ${error.message}`)
     },
   })
